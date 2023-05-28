@@ -15,22 +15,19 @@ register
                         <form method="POST" class="form-register">
                             {{ form.hidden_tag() }}
 
-                                {{ form.username.label() }}
-                                {{ form.username(class="form-control form-outline mb-4", placeholder="User Name") }}
+                            {{ form.username.label() }}
+                            {{ form.username(class="form-control form-outline mb-4", placeholder="User Name") }}
+
+                            {{ form.email_address.label() }}
+                            {{ form.email_address(class="form-control form-outline mb-4", placeholder="Email address")
+                            }}
+
+                            {{ form.password1.label() }}
+                            {{ form.password1(class="form-control form-outline mb-4", placeholder="Password") }}
 
 
-
-                                {{ form.email_address.label() }}
-                                {{ form.email_address(class="form-control form-outline mb-4", placeholder="Email address") }}
-
-
-
-                                {{ form.password1.label() }}
-                                {{ form.password1(class="form-control form-outline mb-4", placeholder="Password") }}
-
-
-                                {{ form.password2.label() }}
-                                {{ form.password2(class="form-control form-outline mb-4", placeholder="Confirm password") }}
+                            {{ form.password2.label() }}
+                            {{ form.password2(class="form-control form-outline mb-4", placeholder="Confirm password") }}
 
 
                             <!-- Checkbox -->

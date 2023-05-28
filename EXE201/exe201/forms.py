@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from exe201.models import User
+from flask_login import current_user
 
 class RegisterForm(FlaskForm):
 
@@ -28,3 +29,15 @@ class LoginForm(FlaskForm):
     username = StringField(label='User Name:', validators=[DataRequired()])
     password = StringField(label='Password:', validators=[DataRequired()])
     submit = SubmitField(label='Sign in')
+
+class EditProfile(FlaskForm):
+
+    fullname = StringField(label='Full name:', validators=[DataRequired()])
+    email_address = StringField(label='Email address:', validators=[Email(), DataRequired()])
+    phone_number = StringField(label='Phone number:', validators=[DataRequired()])
+    address = StringField(label='Address:', validators=[DataRequired()])
+    city = StringField(label='City:', validators=[DataRequired()])
+    state = StringField(label='State:', validators=[DataRequired()])
+    zipcode = StringField(label='Zipcode:', validators=[DataRequired()])
+    country = StringField(label='Country:', validators=[DataRequired()])
+    submit = SubmitField(label='Save Changes')
