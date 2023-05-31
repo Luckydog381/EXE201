@@ -25,8 +25,9 @@ Block title
                                     </div>
                                     <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
                                         <div class="text-center text-sm-left mb-2 mb-sm-0">
-                                            <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">John Smith</h4>
-                                            <p class="mb-0">@johnny.s</p>
+                                            <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{ profile_to_update.fullname }}
+                                            </h4>
+                                            <p class="mb-0">{{ profile_to_update.email_address }}</p>
                                             <div class="mt-2">
                                                 <button class="btn btn-primary" type="button">
                                                     <i class="fa fa-fw fa-camera"></i>
@@ -41,7 +42,7 @@ Block title
                                     </div>
                                 </div>
                                 <div class="tab-content pt-3 px-3">
-                                    <div class="tab-pane active">
+                                    <div class="tab-pane active form-floating">
                                         <form class="form" method="POST">
                                             {{ form.csrf_token }}
                                             <div class="row">
@@ -72,6 +73,9 @@ Block title
                                                     {{ form.country.label}}
                                                     {{ form.country(class="form-control")}}
                                                 </div>
+
+                                                {{ form.about_me.label}}
+                                                {{ form.about_me(class="form-control form-control-lg")}}
                                             </div>
                                             <div class="row pt-3">
                                                 <div class="col d-flex justify-content-end">

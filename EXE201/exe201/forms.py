@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
-from exe201.models import User
+from exe201.models import User, Profile
 from flask_login import current_user
 
 class RegisterForm(FlaskForm):
@@ -14,7 +14,7 @@ class RegisterForm(FlaskForm):
             raise ValidationError('Username has already exists! Please try a different username!')
             
     def validate_email_address(self, email_address_to_check):
-        email_address = User.query.filter_by(email_address=email_address_to_check.data).first()
+        email_address = Profile.query.filter_by(email_address=email_address_to_check.data).first()
         #if not null
         if email_address:
             raise ValidationError('Email address has already exists! Please try a different email!')
@@ -31,6 +31,12 @@ class LoginForm(FlaskForm):
     submit = SubmitField(label='Sign in')
 
 class EditProfile(FlaskForm):
+    #check if user or email existed!
+    def validate_email_address(self, email_address_to_check):
+        email_address = Profile.query.filter_by(email_address=email_address_to_check.data).first()
+        #if not null
+        if email_address and email_address_to_check.data != Profile.query.filter_by(user_id=current_user.id).first().email_address:
+            raise ValidationError('Email address has already exists! Please try a different email!')
 
     fullname = StringField(label='Full name:', validators=[DataRequired()])
     email_address = StringField(label='Email address:', validators=[Email(), DataRequired()])
@@ -40,4 +46,5 @@ class EditProfile(FlaskForm):
     state = StringField(label='State:', validators=[DataRequired()])
     zipcode = StringField(label='Zipcode:', validators=[DataRequired()])
     country = StringField(label='Country:', validators=[DataRequired()])
+    about_me = StringField(label='Introduction:')
     submit = SubmitField(label='Save Changes')

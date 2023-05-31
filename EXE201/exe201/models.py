@@ -8,7 +8,6 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key = True)
     username = db.Column(db.String(length=30), nullable = False, unique = True)
-    email_address = db.Column(db.String(length=50), nullable = False, unique = True)
     password_hash = db.Column(db.String(length=60), nullable = False)
 
     #setter & getter
@@ -24,21 +23,6 @@ class User(db.Model, UserMixin):
     def check_password_correction(self, attempted_password):
         return bcrypt.check_password_hash(self.password_hash, attempted_password)
 
-'''
-class Product(db.Model):
-    id = db.Column(db.Integer(), primary_key = True)
-    resource_id = db.Column(db.Integer())
-    product_name = db.Column(db.String(length = 30), nullable = False, unique = False)
-    author = db.Column(db.String(length = 30), nullable = False)
-    release_date = db.Column(db.DateTime(), nullable = False)
-    price = db.Column(db.Integer(), nullable = False)
-
-class Resources(db.Model):
-    id = db.Column(db.Integer(), primary_key = True)
-    description = db.Column(db.String(1000), nullable = False)
-    image_link = db.Column(db.String(300), nullable = False)
-'''
-
 class Profile(db.Model):
     id = db.Column(db.Integer(), primary_key = True)
     fullname = db.Column(db.String(length = 30), nullable = True)
@@ -49,5 +33,16 @@ class Profile(db.Model):
     state = db.Column(db.String(length = 30), nullable = True)
     zipcode = db.Column(db.String(length = 5), nullable = True)
     country = db.Column(db.String(length = 30), nullable = True)
+    about_me = db.Column(db.String(length = 1000), nullable = True)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
-    user = db.relationship('User', backref = 'profile', uselist = False)
+    product = db.relationship('Product', backref='owned_user', lazy=True)
+
+class Product(db.Model):
+    id = db.Column(db.Integer(), primary_key = True)
+    name = db.Column(db.String(length = 30), nullable = False)
+    image_link = db.Column(db.String(length = 300), nullable = True, default = 'meme_1.jpg')
+    price = db.Column(db.Integer(), nullable = False)
+    description = db.Column(db.String(length = 1000), nullable = True)
+    author = db.Column(db.String(length = 30), nullable = False)
+    owner = db.Column(db.Integer(), db.ForeignKey('profile.id'))
+    

@@ -1,6 +1,6 @@
 from exe201 import app, db
 from flask import render_template, url_for, redirect, request, flash
-from exe201.models import User, Profile
+from exe201.models import User, Profile, Product
 from exe201.forms import RegisterForm, LoginForm, EditProfile
 from flask_login import login_user, login_required, logout_user, current_user
 
@@ -28,12 +28,12 @@ def login_page():
             pass
         elif 'login_with_Facebook' in request.form:
             pass
-        else: 
+        else:
+            #login and check input information 
             attempted_user = User.query.filter_by(username = form.username.data).first()
             if attempted_user and attempted_user.check_password_correction(
                 attempted_password = form.password.data
             ):
-                print("Login successfully!")
                 login_user(attempted_user)
                 flash(f'Welcome back, {attempted_user.username}', category='success')
                 return redirect(url_for('home_page'))
@@ -48,7 +48,6 @@ def register_page():
     if form.validate_on_submit():
         #create new user
         user_to_create = User(username = form.username.data,
-                            email_address = form.email_address.data,
                             password = form.password1.data)
         db.session.add(user_to_create)
         db.session.commit()
@@ -62,7 +61,8 @@ def register_page():
                                     city = None,
                                     state = None,
                                     zipcode = None,
-                                    country = None)
+                                    country = None,
+                                    about_me = None)
         db.session.add(profile_to_create)
         db.session.commit()
         login_user(user_to_create)
@@ -82,12 +82,20 @@ def profile_page():
 @app.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit_page():
-    logged_in_user_email = current_user.email_address
-    form = EditProfile(email_address = logged_in_user_email)
+    # Query the database to get the user's profile
+    profile_to_update = Profile.query.filter_by(user_id=current_user.id).first()
+    form = EditProfile(
+        fullname = profile_to_update.fullname,
+        email_address = profile_to_update.email_address,
+        phone_number = profile_to_update.phone_number,
+        address = profile_to_update.address,
+        city = profile_to_update.city,
+        state = profile_to_update.state,
+        zipcode = profile_to_update.zipcode,
+        country = profile_to_update.country,
+        #about_me = Profile.query.filter_by(user_id=current_user.id).first().about_me
+        )
     if form.validate_on_submit():
-        # Query the database to get the user's profile
-        profile_to_update = Profile.query.filter_by(user_id=current_user.id).first()
-        print('User detected!')
         # Update the profile attributes with the new information from the form
         profile_to_update.fullname = form.fullname.data
         profile_to_update.email_address = form.email_address.data
@@ -97,13 +105,28 @@ def edit_page():
         profile_to_update.state = form.state.data
         profile_to_update.zipcode = form.zipcode.data
         profile_to_update.country = form.country.data
-        #profile_to_update.about_me = form.about_me.data
+        profile_to_update.about_me = form.about_me.data
 
         # Commit the changes to the database
         db.session.commit()
         flash(f'Profile updated!', category='success')
         return redirect(url_for('profile_page'))
-    return render_template('edit_profile.html', form = form)
+    if form.errors != {}:
+        for err_msg in form.errors.values():
+            flash(f'Error: {err_msg}', category='danger')
+    return render_template('edit_profile.html', form = form, profile_to_update = profile_to_update)
+
+@app.route('/marketplace')
+@login_required
+def marketplace_page():
+    products = Product.query.all()
+    return render_template('marketplace.html', products = products)
+
+@app.route('/marketplace/<int:product_id>', methods=['GET', 'POST'])
+@login_required
+def product_page(product_id):
+    product = Product.query.get_or_404(product_id)
+    return render_template('product_info.html', product = product)
 
 @app.route('/logout')
 def logout_page():
