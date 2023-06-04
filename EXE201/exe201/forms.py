@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, FileField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from exe201.models import User, Profile
 from flask_login import current_user
@@ -48,3 +48,16 @@ class EditProfile(FlaskForm):
     country = StringField(label='Country:', validators=[DataRequired()])
     about_me = StringField(label='Introduction:')
     submit = SubmitField(label='Save Changes')
+
+class CreateProduct(FlaskForm):
+    name = StringField(label='Product name:', validators=[DataRequired()])
+    price = StringField(label='Price:', validators=[DataRequired()])
+    description = StringField(label='Description:', validators=[DataRequired()])
+    image_file = FileField(label='Image:', validators=[DataRequired()])
+    submit = SubmitField(label='Add Product')
+
+class UpdateProduct(FlaskForm):
+    name = StringField(label='Product name:', validators=[DataRequired()])
+    price = StringField(label='Price:', validators=[DataRequired()])
+    description = StringField(label='Description:', validators=[DataRequired()])
+    submit = SubmitField(label='Update Product')

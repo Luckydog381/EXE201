@@ -1,7 +1,11 @@
+import os
+import secrets
+from PIL import Image
 from exe201 import app, db
 from flask import render_template, url_for, redirect, request, flash
-from exe201.models import User, Profile, Product
-from exe201.forms import RegisterForm, LoginForm, EditProfile
+from exe201.models import User, Profile, Product, Cart
+from exe201.forms import RegisterForm, LoginForm, EditProfile, CreateProduct
+from exe201.utils import save_image
 from flask_login import login_user, login_required, logout_user, current_user
 
 # Set up the application context
@@ -10,6 +14,19 @@ app.app_context().push()
 # Create the tables
 db.create_all()
 
+def create_product_info():
+    product1 = Product(name = 'Bugs bunny 1', image_link = 'img/meme_1.jpg', price = 32, description = 'This is product 1', author = 'admin', owner = None)
+    product2 = Product(name = 'Bugs bunny 2', image_link = 'img/meme_2.jpg', price = 10, description = 'This is product 2', author = 'admin 2', owner = None)
+    product3 = Product(name = 'Bugs bunny 3', image_link = 'img/meme_3.jpg', price = 50, description = 'This is product 3', author = 'admin 3', owner = None)
+    product4 = Product(name = 'Bugs bunny 4', image_link = 'img/meme_4.jpg', price = 100, description = 'This is product 4', author = 'admin', owner = None)
+
+    db.session.add(product1)
+    db.session.add(product2)
+    db.session.add(product3)
+    db.session.add(product4)
+    db.session.commit()
+
+#create_product_info()
 
 @app.route('/')
 @app.route('/home')
@@ -87,13 +104,14 @@ def edit_page():
     form = EditProfile(
         fullname = profile_to_update.fullname,
         email_address = profile_to_update.email_address,
+        image_link = profile_to_update.image_link,
         phone_number = profile_to_update.phone_number,
         address = profile_to_update.address,
         city = profile_to_update.city,
         state = profile_to_update.state,
         zipcode = profile_to_update.zipcode,
         country = profile_to_update.country,
-        #about_me = Profile.query.filter_by(user_id=current_user.id).first().about_me
+        about_me = profile_to_update.about_me
         )
     if form.validate_on_submit():
         # Update the profile attributes with the new information from the form
@@ -116,6 +134,30 @@ def edit_page():
             flash(f'Error: {err_msg}', category='danger')
     return render_template('edit_profile.html', form = form, profile_to_update = profile_to_update)
 
+@app.route('/create_product', methods=['GET', 'POST'])
+@login_required
+def add_product_page():
+    form = CreateProduct()
+    if form.validate_on_submit():
+        #create new product
+        product_to_create = Product(name = form.name.data,
+                                    image_link = form.image_file.data.filename,
+                                    price = form.price.data,
+                                    description = form.description.data,
+                                    author = current_user.username,
+                                    owner = current_user.id)
+        db.session.add(product_to_create)
+        db.session.commit()
+        #save image
+        if form.image_file.data:
+            #save image
+            picture_file = save_image(form.image_file.data, folder = 'static/img')
+            product_to_create.image_link = f'img/{picture_file}'
+        db.session.commit()
+        flash(f'Product added!', category='success')
+        return redirect(url_for('marketplace_page'))
+    return render_template('create_product.html', form = form)
+
 @app.route('/marketplace')
 @login_required
 def marketplace_page():
@@ -127,6 +169,47 @@ def marketplace_page():
 def product_page(product_id):
     product = Product.query.get_or_404(product_id)
     return render_template('product_info.html', product = product)
+
+@app.route('/marketplace/<int:product_id>/add_to_cart', methods=['GET', 'POST'])
+@login_required
+def add_to_cart(product_id):
+    cart_item = Cart.query.filter_by(user_id = current_user.id, product_id = product_id).first()
+    if cart_item:
+        flash(f'Product already in cart!', category='danger')
+    else:
+        cart = Cart(user_id = current_user.id, product_id = product_id)
+        db.session.add(cart)
+        db.session.commit()
+        flash(f'Product added to cart!', category='success')
+    return redirect(url_for('marketplace_page'))
+
+@app.route('/marketplace/<int:product_id>/remove_from_cart', methods=['GET', 'POST'])
+@login_required
+def remove_from_cart(product_id):
+    cart_item = Cart.query.filter_by(user_id = current_user.id, product_id = product_id).first()
+    if cart_item:
+        db.session.delete(cart_item)
+        db.session.commit()
+        flash(f'Product removed from cart!', category='success')
+    else:
+        flash(f'Product not in cart!', category='danger')
+    return redirect(url_for('cart_page'))
+
+@app.route('/cart')
+@login_required
+def cart_page():
+    cart = Cart.query.filter_by(user_id = current_user.id).all()
+    products = []
+    total_money_without_service_free = 0
+    service_fee = 0.1
+    for product_in_cart in cart:
+        products.append(Product.query.get_or_404(product_in_cart.product_id))
+        total_money_without_service_free += Product.query.get_or_404(product_in_cart.product_id).price
+    products_amount = len(cart)
+    total_money = total_money_without_service_free + total_money_without_service_free * service_fee
+    return render_template('cart.html', products = products, cart = cart, products_amount = products_amount, total_money = total_money, service_fee = service_fee)
+
+
 
 @app.route('/logout')
 def logout_page():

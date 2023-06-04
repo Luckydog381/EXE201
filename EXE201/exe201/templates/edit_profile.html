@@ -18,13 +18,12 @@ Block title
                                         <div class="mx-auto" style="width: 140px;">
                                             <div class="d-flex justify-content-center align-items-center rounded"
                                                 style="height: 140px; background-color: rgb(233, 236, 239);">
-                                                <span
-                                                    style="color: rgb(166, 168, 170); font: bold 8pt Arial;">140x140</span>
+                                                <img class="img-thumbnail" src="{{ url_for('static', filename = profile_to_update.image_link) }}">
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
-                                        <div class="text-center text-sm-left mb-2 mb-sm-0">
+                                        <div class="text-left text-sm-left mb-2 mb-sm-0">
                                             <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{ profile_to_update.fullname }}
                                             </h4>
                                             <p class="mb-0">{{ profile_to_update.email_address }}</p>

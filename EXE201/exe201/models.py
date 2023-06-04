@@ -26,6 +26,7 @@ class User(db.Model, UserMixin):
 class Profile(db.Model):
     id = db.Column(db.Integer(), primary_key = True)
     fullname = db.Column(db.String(length = 30), nullable = True)
+    image_link = db.Column(db.String(length = 300), nullable = True, default = '/profile_pic/default.webp')
     email_address = db.Column(db.String(length = 50), nullable = True, unique = True)
     phone_number = db.Column(db.String(length = 10), nullable = True, unique = True)
     address = db.Column(db.String(length = 100), nullable = True)
@@ -45,4 +46,9 @@ class Product(db.Model):
     description = db.Column(db.String(length = 1000), nullable = True)
     author = db.Column(db.String(length = 30), nullable = False)
     owner = db.Column(db.Integer(), db.ForeignKey('profile.id'))
+    
+class Cart(db.Model):
+    id = db.Column(db.Integer(), primary_key = True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    product_id = db.Column(db.Integer(), db.ForeignKey('product.id'))
     
