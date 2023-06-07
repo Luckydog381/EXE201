@@ -7,43 +7,42 @@ Block title
 {% block body %}
 <div class="container py-5 h-100">
     <div class="row flex-lg-nowrap">
-        <div class="col">
-            <div class="row">
-                <div class="col mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="e-profile">
-                                <div class="row">
-                                    <div class="col-12 col-sm-auto mb-3">
-                                        <div class="mx-auto" style="width: 140px;">
-                                            <div class="d-flex justify-content-center align-items-center rounded"
-                                                style="height: 140px; background-color: rgb(233, 236, 239);">
-                                                <img class="img-thumbnail" src="{{ url_for('static', filename = profile_to_update.image_link) }}">
+        <form class="form" method="POST" enctype="multipart/form-data">
+            {{ form.csrf_token }}
+            <div class="col">
+                <div class="row">
+                    <div class="col mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="e-profile">
+                                    <div class="row">
+                                        <div class="col-12 col-sm-auto mb-3">
+                                            <div class="mx-auto" style="width: 140px;">
+                                                <div class="d-flex justify-content-center align-items-center rounded"
+                                                    style="height: 140px; background-color: rgb(233, 236, 239);">
+                                                    <img src="{{ url_for('static', filename=user_image_link) }}" alt="Profile Picture" class="img-thumbnail" id="profile-picture-preview">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
+                                            <div class="text-left text-sm-left mb-2 mb-sm-0">
+                                                <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{ profile_to_update.fullname }}
+                                                </h4>
+                                                <p class="mb-0">{{ profile_to_update.email_address }}</p>
+                                                <div class="custom-file mt-2">
+                                                    {{ form.image_file(class='form-control-files', style="display: none") }}
+                                                    {{ form.image_file.label(class="btn btn-primary") }}
+                                                </div>
+                                            </div>
+                                            <div class="text-center text-sm-right">
+                                                <span class="badge badge-secondary">administrator</span>
+                                                <div class="text-muted"><small>Joined 09 Dec 2017</small></div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
-                                        <div class="text-left text-sm-left mb-2 mb-sm-0">
-                                            <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{ profile_to_update.fullname }}
-                                            </h4>
-                                            <p class="mb-0">{{ profile_to_update.email_address }}</p>
-                                            <div class="mt-2">
-                                                <button class="btn btn-primary" type="button">
-                                                    <i class="fa fa-fw fa-camera"></i>
-                                                    <span>Change Photo</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="text-center text-sm-right">
-                                            <span class="badge badge-secondary">administrator</span>
-                                            <div class="text-muted"><small>Joined 09 Dec 2017</small></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tab-content pt-3 px-3">
-                                    <div class="tab-pane active form-floating">
-                                        <form class="form" method="POST">
-                                            {{ form.csrf_token }}
+                                    <div class="tab-content pt-3 px-3">
+                                        <div class="tab-pane active form-floating">
+
                                             <div class="row">
                                                 {{ form.fullname.label}}
                                                 {{ form.fullname(class="form-control") }}
@@ -74,14 +73,14 @@ Block title
                                                 </div>
 
                                                 {{ form.about_me.label}}
-                                                {{ form.about_me(class="form-control form-control-lg")}}
+                                                {{ form.about_me(class="form-control", rows="3")}}
                                             </div>
                                             <div class="row pt-3">
                                                 <div class="col d-flex justify-content-end">
                                                     {{ form.submit(class="btn btn-primary") }}
                                                 </div>
                                             </div>
-                                        </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -89,8 +88,7 @@ Block title
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
-</div>
 </div>
 {% endblock %}

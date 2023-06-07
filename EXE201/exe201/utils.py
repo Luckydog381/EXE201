@@ -8,7 +8,7 @@ def save_image(image_file, folder):
     _, f_ext = os.path.splitext(image_file.filename)
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(app.root_path, folder, picture_fn)
-    output_size = (125, 125)
+    output_size = (500, 500)
     i = Image.open(image_file)
     i.thumbnail(output_size)
     i.save(picture_path)

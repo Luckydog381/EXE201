@@ -8,6 +8,8 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer(), primary_key = True)
     username = db.Column(db.String(length=30), nullable = False, unique = True)
+    email_address = db.Column(db.String(length=50), nullable = False, unique = True)
+    image_link = db.Column(db.String(length = 300), nullable = True, default = '/profile_img/default.webp')
     password_hash = db.Column(db.String(length=60), nullable = False)
 
     #setter & getter
@@ -26,8 +28,7 @@ class User(db.Model, UserMixin):
 class Profile(db.Model):
     id = db.Column(db.Integer(), primary_key = True)
     fullname = db.Column(db.String(length = 30), nullable = True)
-    image_link = db.Column(db.String(length = 300), nullable = True, default = '/profile_pic/default.webp')
-    email_address = db.Column(db.String(length = 50), nullable = True, unique = True)
+    image_link = db.Column(db.String(length = 300), nullable = True, default = '/profile_img/default.webp')
     phone_number = db.Column(db.String(length = 10), nullable = True, unique = True)
     address = db.Column(db.String(length = 100), nullable = True)
     city = db.Column(db.String(length = 30), nullable = True)
@@ -38,13 +39,20 @@ class Profile(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
     product = db.relationship('Product', backref='owned_user', lazy=True)
 
+class Artist(db.Model):
+    id = db.Column(db.Integer(), primary_key = True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    role = db.Column(db.String(length = 30), nullable = False)
+    created_product = db.relationship('Product', backref='owned_artist', lazy=True)
+
+
 class Product(db.Model):
     id = db.Column(db.Integer(), primary_key = True)
     name = db.Column(db.String(length = 30), nullable = False)
     image_link = db.Column(db.String(length = 300), nullable = True, default = 'meme_1.jpg')
     price = db.Column(db.Integer(), nullable = False)
     description = db.Column(db.String(length = 1000), nullable = True)
-    author = db.Column(db.String(length = 30), nullable = False)
+    creator = db.Column(db.Integer(), db.ForeignKey('artist.id'))
     owner = db.Column(db.Integer(), db.ForeignKey('profile.id'))
     
 class Cart(db.Model):

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Edit public profile
+{% endblock %}
+
+{% block body %}
+<form method="POST">
+    {{ form.csrf_token }}
+    <div class="form-row">
+        <img class="img-rounded col-md-4" src="{{ url_for('static', filename=current_user.image_link) }}" style="height: 25px; width: 25px;" alt="User's avatar">
+        {{ form.profile_img.label }}
+        {{ form.profile_img(class="form-group col-md-8") }}
+    </div>
+    <div class="form-row">
+        {{ form.firstname.label }}
+        {{ form.firstname(class="form-group col-md-6") }}
+
+        {{ form.lastname.label }}
+        {{ form.lastname(class="form-group col-md-6") }}
+    </div>
+    <div class="form-group">
+        {{ form.introduction.label }}
+        {{ form.introduction(class="form-control" rows="3") }}
+    </div>
+</form>
+{% endblock %}
