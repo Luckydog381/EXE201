@@ -2,26 +2,23 @@ from exe201 import app, db
 from flask import render_template, url_for, redirect, request, flash
 from exe201.models import User, Profile, Product, Cart, Artist
 from exe201.forms import RegisterForm, LoginForm, EditProfile, CreateProduct
-from exe201.utils import save_image
+from exe201.utils import save_image, create_product_info
 from flask_login import login_user, login_required, logout_user, current_user
+from paypalcheckoutsdk.core import PayPalHttpClient, SandboxEnvironment
+from paypalcheckoutsdk.orders import OrdersCreateRequest
+
+# Set up the PayPal environment
+client_id = 'ARafNYmSC69Xd-E6zTtV5FI0NXOaDduq4f8ow6EB8OPeJg_4HTDeclFQDY5spcxp77P9FJoQu-b2gkBj'
+client_secret = 'EDeLFTm97h2nFd15IdI1bo8X8N9nX4ZWLhRsN66eZuZqYgKmr8b9i4939N0XP3mVoy88ao0cl0Boq_7I'
+environment = SandboxEnvironment(client_id=client_id, client_secret=client_secret)
+client = PayPalHttpClient(environment)
+
 
 # Set up the application context
 app.app_context().push()
 
 # Create the tables
 db.create_all()
-
-def create_product_info():
-    product1 = Product(name = 'Bugs bunny 1', image_link = 'img/meme_1.jpg', price = 32, description = 'This is product 1', author = 'admin', owner = None)
-    product2 = Product(name = 'Bugs bunny 2', image_link = 'img/meme_2.jpg', price = 10, description = 'This is product 2', author = 'admin 2', owner = None)
-    product3 = Product(name = 'Bugs bunny 3', image_link = 'img/meme_3.jpg', price = 50, description = 'This is product 3', author = 'admin 3', owner = None)
-    product4 = Product(name = 'Bugs bunny 4', image_link = 'img/meme_4.jpg', price = 100, description = 'This is product 4', author = 'admin', owner = None)
-
-    db.session.add(product1)
-    db.session.add(product2)
-    db.session.add(product3)
-    db.session.add(product4)
-    db.session.commit()
 
 #create_product_info()
 
@@ -160,8 +157,7 @@ def create_product_page():
                                     image_link = form.image_file.data.filename,
                                     price = form.price.data,
                                     description = form.description.data,
-                                    creator = current_user.id,
-                                    owner = current_user.id)
+                                    creator = current_user.id)
         db.session.add(product_to_create)
         db.session.commit()
         #save image
@@ -207,7 +203,7 @@ def add_to_cart(product_id):
         cart = Cart(user_id = current_user.id, product_id = product_id)
         db.session.add(cart)
         db.session.commit()
-        flash(f'Product added to cart!', category='success')
+        flash(f'Product was added to cart!', category='success')
     return redirect(url_for('marketplace_page'))
 
 @app.route('/marketplace/<int:product_id>/remove_from_cart', methods=['GET', 'POST'])
@@ -242,6 +238,47 @@ def cart_page():
 @login_required
 def chat_page():
     return render_template('chat.html')
+
+# Paypal payment
+# Define the PayPal checkout route
+@app.route('/paypal_checkout', methods=['POST'])
+@login_required
+def paypal_checkout():
+    # Get the total amount and service fee from the form data
+    total_money = request.form['total_money']
+
+    # Create an order request
+    request = OrdersCreateRequest()
+    request.prefer('return=representation')
+    request.request_body({
+        "intent": "CAPTURE",
+        "purchase_units": [
+            {
+                "amount": {
+                    "currency_code": "USD",
+                    "value": str(total_money)
+                }
+            }
+        ]
+    })
+
+    # Call the PayPal API to create the order
+    response = client.execute(request)
+
+    # Get the approval URL from the response
+    approval_url = None
+    for link in response.result.links:
+        if link.rel == "approve":
+            approval_url = link.href
+            break
+
+    # Redirect the user to the approval URL
+    if approval_url:
+        flash(f'Payment successful!', category='success')
+        return redirect(approval_url)
+    else:
+        flash(f'Payment failed!', category='danger')
+        return "Failed to create PayPal order"
 
 @app.route('/logout')
 def logout_page():

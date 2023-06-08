@@ -37,14 +37,12 @@ class Profile(db.Model):
     country = db.Column(db.String(length = 30), nullable = True)
     about_me = db.Column(db.String(length = 1000), nullable = True)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
-    product = db.relationship('Product', backref='owned_user', lazy=True)
 
 class Artist(db.Model):
     id = db.Column(db.Integer(), primary_key = True)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
     role = db.Column(db.String(length = 30), nullable = False)
     created_product = db.relationship('Product', backref='owned_artist', lazy=True)
-
 
 class Product(db.Model):
     id = db.Column(db.Integer(), primary_key = True)
@@ -53,7 +51,6 @@ class Product(db.Model):
     price = db.Column(db.Integer(), nullable = False)
     description = db.Column(db.String(length = 1000), nullable = True)
     creator = db.Column(db.Integer(), db.ForeignKey('artist.id'))
-    owner = db.Column(db.Integer(), db.ForeignKey('profile.id'))
     
 class Cart(db.Model):
     id = db.Column(db.Integer(), primary_key = True)
