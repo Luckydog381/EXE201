@@ -27,9 +27,9 @@ db.create_all()
 def home_page():
     return render_template('home.html')
 
-@app.route('/contact')
-def contact_info():
-    return render_template('contact.html')
+@app.route('/aboutus')
+def about_us_page():
+    return render_template('about_us.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -89,7 +89,22 @@ def register_page():
 def profile_page(user_id):
     user_profile = Profile.query.filter_by(user_id=user_id).first()
     user_email_address = User.query.filter_by(id=user_id).first().email_address
-    return render_template('profile.html', user_profile = user_profile, user_email_address = user_email_address)
+
+    # Get the user's role
+    user_role = Artist.query.filter_by(user_id=user_id).first()
+    if user_role:
+        user_role = user_role.role
+    else:
+        user_role = 'Customer'
+
+    # Check if user in the artist list
+    artist_products = None
+    if Artist.query.filter_by(user_id=user_id).first():
+        # Get the artist's products
+        artist_products = Product.query.filter_by(creator=user_id).all()
+        return render_template('profile.html', user_profile = user_profile, user_email_address = user_email_address, user_role = user_role, artist_products = artist_products)
+
+    return render_template('profile.html', user_profile = user_profile, user_email_address = user_email_address, user_role = user_role)
 
 @app.route('/setting/edit-profile', methods=['GET', 'POST'])
 @login_required
@@ -145,7 +160,11 @@ def edit_profile():
     if form.errors != {}:
         for err_msg in form.errors.values():
             flash(f'Error: {err_msg}', category='danger')
-    return render_template('edit_profile.html', form = form, profile_to_update = profile_to_update, user_image_link = user_image_link)
+    return render_template('edit_profile.html', 
+                           form = form, 
+                           profile_to_update = profile_to_update, 
+                           user_image_link = user_image_link
+                           )
 
 @app.route('/create_product', methods=['GET', 'POST'])
 @login_required
@@ -167,14 +186,20 @@ def create_product_page():
             product_to_create.image_link = f'img/{picture_file}'
         db.session.commit()
         flash(f'Product added!', category='success')
-        return redirect(url_for('marketplace_page'))
+        return redirect(url_for('gallery_page'))
     return render_template('create_product.html', form = form)
 
-@app.route('/marketplace')
-@login_required
-def marketplace_page():
+@app.route('/gallery')
+def gallery_page():
     # Query the database to get all the products
     products = Product.query.all()
+    # Fetch the creator's name of each product
+    for product in products:
+        product.creator = Artist.query.filter_by(id=product.creator).first().user_id
+    # Fetch the creator's profile of each product
+    for product in products:
+        product.creator = Profile.query.filter_by(user_id=product.creator).first().fullname
+    
     # Query the database to get all the artists
     # Get all artists user id
     artists_user_id = []
@@ -184,16 +209,20 @@ def marketplace_page():
     artists_user_profile = []
     for artist in artists_user_id:
         artists_user_profile.append(Profile.query.filter_by(user_id=artist.id).first())
+    # Fetch the artist role
+    for i in range(len(artists_user_id)):
+        artists_user_profile[i].role = Artist.query.filter_by(user_id=artists_user_id[i].id).first().role
+    
+    return render_template('gallery.html', 
+                           products = products, 
+                           artists_user_profile = artists_user_profile)
 
-    return render_template('marketplace.html', products = products, artists_user_profile = artists_user_profile)
-
-@app.route('/marketplace/<int:product_id>', methods=['GET', 'POST'])
-@login_required
+@app.route('/gallery/<int:product_id>', methods=['GET', 'POST'])
 def product_page(product_id):
     product = Product.query.get_or_404(product_id)
     return render_template('product_info.html', product = product)
 
-@app.route('/marketplace/<int:product_id>/add_to_cart', methods=['GET', 'POST'])
+@app.route('/gallery/<int:product_id>/add_to_cart', methods=['GET', 'POST'])
 @login_required
 def add_to_cart(product_id):
     cart_item = Cart.query.filter_by(user_id = current_user.id, product_id = product_id).first()
@@ -204,9 +233,9 @@ def add_to_cart(product_id):
         db.session.add(cart)
         db.session.commit()
         flash(f'Product was added to cart!', category='success')
-    return redirect(url_for('marketplace_page'))
+    return redirect(url_for('gallery_page'))
 
-@app.route('/marketplace/<int:product_id>/remove_from_cart', methods=['GET', 'POST'])
+@app.route('/gallery/<int:product_id>/remove_from_cart', methods=['GET', 'POST'])
 @login_required
 def remove_from_cart(product_id):
     cart_item = Cart.query.filter_by(user_id = current_user.id, product_id = product_id).first()
@@ -231,7 +260,15 @@ def cart_page():
     products_amount = len(cart)
     service_fee *= total_money_without_service_free
     total_money = total_money_without_service_free + service_fee
-    return render_template('cart.html', products = products, cart = cart, products_amount = products_amount,  service_fee = service_fee,total_money = total_money, total_money_without_service_free = total_money_without_service_free)
+    service_fee = '{:.2f}'.format(service_fee)
+    return render_template('cart.html', 
+                           products = products,
+                           cart = cart, 
+                           products_amount = products_amount,  
+                           service_fee = service_fee,
+                           total_money = total_money, 
+                           total_money_without_service_free = total_money_without_service_free
+                           )
 
 # Create chat page
 @app.route('/chat')
@@ -285,3 +322,13 @@ def logout_page():
     logout_user()
     flash(f'You have been logged out!', category='info')
     return redirect(url_for('home_page'))
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(403)
+@app.errorhandler(401)
+def page_forbidden(e):
+    flash(f'You need to login to use your service!', category='danger')
+    return redirect(url_for('login_page'))

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Album
+{% endblock %}
+
+{% block body %}
+<section class="jumbotron text-center text-light">
+  <div class="container">
+    <h1 class="jumbotron-heading">Product example</h1>
+    <p class="lead text-light">Something short and leading about the collection below—its contents, the creator, etc.
+      Make it short and sweet, but not too short so folks don't simply skip over it entirely.</p>
+    <p>
+      <a href="#" class="btn btn-primary my-2">Main call to action</a>
+      <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+    </p>
+  </div>
+</section>
+<!-- products display -->
+<div class="album py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      {% for product in products %}
+      <div class="col-md-4">
+        <div class="card mb-4 box-shadow">
+          <img class="card-img-top" alt="Thumbnail [100%x225]" style="height: 225px; width: 100%; display: block;"
+            src="{{ url_for('static', filename=product.image_link) }}">
+          <div class="card-body">
+            <p class="card-text fs-2 font-weight-bold text-danger">{{ product.name }}</p>
+            <p class="card-text">{{ product.description }}.</p>
+            <p class="card-text">Created by: {{ product.creator }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <a type="button" class="btn btn-sm btn-outline-secondary"
+                  href="{{ url_for('product_page', product_id=product.id) }}">View</a>
+                <a type="button" class="btn btn-sm btn-outline-secondary"
+                  href="{{ url_for('add_to_cart', product_id=product.id) }}">Add to cart</a>
+              </div>
+              <small class="text-muted">{{ product.price }}$</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Artist display -->
+<section class="jumbotron text-center text-light">
+  <div class="container">
+    <h1 class="jumbotron-heading">Artist example</h1>
+    <p class="lead text-light">Something short and leading about the collection below—its contents, the creator, etc.
+      Make it short and sweet, but not too short so folks don't simply skip over it entirely.</p>
+    <p>
+      <a href="#" class="btn btn-primary my-2">Main call to action</a>
+      <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+    </p>
+  </div>
+</section>
+
+<div class="album py-5 bg-light">
+  <div class="container">
+    <div class="row">
+      {% for artist in artists_user_profile %}
+      <div class="col-md-4">
+        <div class="card mb-4 box-shadow">
+          <img class="card-img-top" alt="Thumbnail [100%x225]" style="height: 225px; width: 100%; display: block;"
+            src="{{ url_for('static', filename=artist.image_link) }}">
+          <div class="card-body">
+            <p class="card-text fs-2 font-weight-bold text-danger">{{ artist.fullname }}</p>
+            <p class="card-text">{{ artist.about_me }}.</p>
+            <p class="card-text">Job: {{ artist.role }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <a type="button" class="btn btn-sm btn-outline-secondary"
+                  href="{{ url_for('profile_page', user_id = artist.user_id) }}">View Profile</a>
+                <a type="button" class="btn btn-sm btn-outline-secondary"
+                  href="#">Chat</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

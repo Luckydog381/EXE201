@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}
+About us
+{% endblock %}
+
+{% block body %}
+
+<div class="b-example-divider"></div>
+<div class="container my-5">
+    <div class="row p-4 pt-lg-5 align-items-center rounded-3 border shadow-lg">
+        <div class="col-lg-7 p-3 p-lg-5 pt-lg-3">
+            <h1 class="display-4 fw-bold lh-1">Our Story</h1>
+            <p class="lead display-4 text-danger text-break">Japan isn't all about anime and samurai, it's culture and
+                art is one
+                of a kind</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start mb-4 mb-lg-3">
+
+            </div>
+        </div>
+        <div class="col-lg-4 mx-auto d-block shadow-lg">
+            <img class="rounded-lg-3 img-thumbnail" src="{{ url_for('static', filename='img/image_1.png')}}" alt=""
+                width="720">
+        </div>
+    </div>
+
+    <div class="row pt-3 align-items-md-stretch">
+        <div class="col-md-6">
+            <div class="h-100 p-5 text-white bg-danger rounded-3">
+                <h2>About Art</h2>
+                <p>Japanese art covers a wide range of art styles and media, including ancient pottery, sculpture in wood and bronze, ink painting on silk and paper, calligraphy, ceramics, architecture, oil painting, literature, drama and music</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="h-100 p-5 border rounded-3 text-dark" style="background-color: #FFF9C4;">
+                <h2>About anime</h2>
+                <p>Anime is a style of hand-drawn and computer-generated animation originating from Japan. It often
+                    draws on history, folklore, mythology, literature and other traditional sources, while some of the
+                    most popular anime shows around the world fall into the fantasy, adventure and science fiction
+                    genres.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="px-4 py-5 my-5 text-center">
+    <img class="d-block mx-auto mb-4" src="{{ url_for('static', filename='img/star.png')}}" alt="" width="72"
+        height="72">
+    <h1 class="display-5 fw-bold">JPNDrawing</h1>
+    <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4 text-break">There are many drawing websites available online. Some popular ones include
+            Sketchpad which
+            allows you to create digital artwork and share it online, Kleki which is a free web-app for painting and
+            editing with features such as different brushes, layers, filters, and pressure sensitivity, and Pixilart
+            which is a free online pixel art drawing tool</p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a class="btn btn-primary btn-lg" href="{{ url_for('register_page') }}">Getting started</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
