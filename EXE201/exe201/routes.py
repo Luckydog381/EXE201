@@ -101,9 +101,9 @@ def profile_page(user_id):
 
     # Check if user in the artist list
     artist_products = None
-    if Artist.query.filter_by(user_id=user_id).first():
-        # Get the artist's products
-        artist_products = Product.query.filter_by(creator=user_id).all()
+   
+    artist_products = Product.query.filter_by(creator=user_id).all()
+    if artist_products:
         return render_template('profile.html', user_profile = user_profile, user_email_address = user_email_address, user_role = user_role, artist_products = artist_products)
 
     return render_template('profile.html', user_profile = user_profile, user_email_address = user_email_address, user_role = user_role)
