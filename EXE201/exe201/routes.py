@@ -4,6 +4,8 @@ from exe201.models import User, Profile, Product, Cart, Artist
 from exe201.forms import RegisterForm, LoginForm, EditProfile, CreateProduct
 from exe201.utils import save_image, create_product_info
 from flask_login import login_user, login_required, logout_user, current_user
+
+'''
 from paypalcheckoutsdk.core import PayPalHttpClient, SandboxEnvironment
 from paypalcheckoutsdk.orders import OrdersCreateRequest
 
@@ -12,7 +14,7 @@ client_id = 'ARafNYmSC69Xd-E6zTtV5FI0NXOaDduq4f8ow6EB8OPeJg_4HTDeclFQDY5spcxp77P
 client_secret = 'EDeLFTm97h2nFd15IdI1bo8X8N9nX4ZWLhRsN66eZuZqYgKmr8b9i4939N0XP3mVoy88ao0cl0Boq_7I'
 environment = SandboxEnvironment(client_id=client_id, client_secret=client_secret)
 client = PayPalHttpClient(environment)
-
+'''
 
 # Set up the application context
 app.app_context().push()
@@ -276,6 +278,7 @@ def cart_page():
 def chat_page():
     return render_template('chat.html')
 
+'''
 # Paypal payment
 # Define the PayPal checkout route
 @app.route('/paypal_checkout', methods=['POST'])
@@ -316,6 +319,12 @@ def paypal_checkout():
     else:
         flash(f'Payment failed!', category='danger')
         return "Failed to create PayPal order"
+'''
+
+@app.route('/purchase-success')
+@login_required
+def purchase_success_page():
+    return render_template('purchase_success.html')
 
 @app.route('/logout')
 def logout_page():

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Purchase success
+{% endblock %}
+
+{% block body %}
+<div class="container col-xxl-8 px-4 py-5">
+    <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+      <div class="col-10 col-sm-8 col-lg-6">
+        <img src="{{ url_for('static', filename='img/anime_girl.png')}}" alt="" width="400">
+      </div>
+      <div class="col-lg-6">
+        <h1 class="text-danger">Purchase success!</h1>
+            <h3 class="text-danger">Thank you for your purchase!</h3>
+            <p>Your products will be send to you via email shortly. We hope that you will satisfy with our service!</p> 
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <a href="{{ url_for('home_page') }}" class="btn btn-danger">Back to home page</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
