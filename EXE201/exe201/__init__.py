@@ -23,3 +23,4 @@ db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 
 from exe201 import routes
+from exe201 import error_handlers

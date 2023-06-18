@@ -45,7 +45,16 @@ Your cart
                                                 <div style="width: 80px;">
                                                     <h5 class="mb-0">${{ product.price }}</h5>
                                                 </div>
-                                                <a type="button" class="btn btn-secondary"
+
+                                                <div>
+                                                    <div class="d-flex flex-row align-items-center input-cantainer pe-1"> 
+                                                        <a class="btn btn-primary mb-0" href="{{ url_for('increase_quantity', product_id=product.id) }}">+</a>              
+                                                        <p class="mb-0 px-3">{{ product.quantity }}</p>
+                                                        <a class="btn btn-secondary mb-0" href="{{ url_for('decrease_quantity', product_id=product.id) }}">-</a>
+                                                    </div>
+                                                </div>
+
+                                                <a type="button" class="btn btn-danger"
                                                     href="{{ url_for('remove_from_cart', product_id = product.id)}}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                                                         fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
@@ -77,53 +86,21 @@ Your cart
                                         </div>
 
                                         <p class="small mb-2">Card type</p>
-                                        <a href="#!" type="submit" class="text-white"><i
-                                                class="fab fa-cc-mastercard fa-2x me-2"></i></a>
-                                        <a href="#!" type="submit" class="text-white"><i
-                                                class="fab fa-cc-visa fa-2x me-2"></i></a>
-                                        <a href="#!" type="submit" class="text-white"><i
-                                                class="fab fa-cc-amex fa-2x me-2"></i></a>
-                                        <a href="#!" type="submit" class="text-white"><i
-                                                class="fab fa-cc-paypal fa-2x"></i></a>
 
-                                        <form class="mt-4">
-                                            <div class="form-outline form-white mb-4">
-                                                <input type="text" id="typeName" class="form-control form-control-lg"
-                                                    siez="17" placeholder="Cardholder's Name" />
-                                                <label class="form-label" for="typeName">Cardholder's Name</label>
-                                            </div>
-
-                                            <div class="form-outline form-white mb-4">
-                                                <input type="text" id="typeText" class="form-control form-control-lg"
-                                                    siez="17" placeholder="1234 5678 9012 3457" minlength="19"
-                                                    maxlength="19" />
-                                                <label class="form-label" for="typeText">Card Number</label>
-                                            </div>
-
-                                            <div class="row mb-4">
-                                                <div class="col-md-6">
-                                                    <div class="form-outline form-white">
-                                                        <input type="text" id="typeExp"
-                                                            class="form-control form-control-lg" placeholder="MM/YYYY"
-                                                            size="7" id="exp" minlength="7" maxlength="7" />
-                                                        <label class="form-label" for="typeExp">Expiration</label>
-                                                    </div>
+                                        <div class="mt-4 d-flex justify-content-center">
+                                            <div class="col">
+                                                <div class="row">
+                                                    <img src="{{ url_for('static', filename = 'img/momo-QR.png')}}" alt="Momo QR code">
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-outline form-white">
-                                                        <input type="password" id="typeText"
-                                                            class="form-control form-control-lg"
-                                                            placeholder="&#9679;&#9679;&#9679;" size="1" minlength="3"
-                                                            maxlength="3" />
-                                                        <label class="form-label" for="typeText">Cvv</label>
-                                                    </div>
+                                                <div class="row">
+                                                    <p>Please enter this transfer your order, please enter this:</p>
+                                                    <p id="order-content" > {{ order_content }}</p>
                                                 </div>
                                             </div>
-
-                                        </form>
+                                        </div>
 
                                         <hr class="my-4">
-                                        <form method="POST">
+                                        <div class="col">
                                             <div class="d-flex justify-content-between">
                                                 <p class="mb-2">Subtotal</p>
                                                 <p class="mb-2">${{total_money_without_service_free}}</p>
@@ -146,15 +123,10 @@ Your cart
                                                     </div>
                                                 </button> 
                                             -->
-                                            <button type="button" class="btn btn-info btn-block btn-lg">
-                                                <div class="d-flex justify-content-between">
-                                                    <a href="{{ url_for('purchase_success_page') }}" class="btn btn-block btn-lg">Check out</a>
-                                                </div>
-                                            </button>
-                                            
-                                        </form>
-
-
+                                            <div class="d-flex justify-content-between">
+                                                <a class="btn btn-info btn-block btn-lg" href="{{ url_for('create_order', order_content=order_content, total_money=total_money) }}" class="btn btn-block btn-lg">Check out</a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 

@@ -1,5 +1,6 @@
 from exe201 import db, bcrypt, login_manager
 from flask_login import UserMixin
+from datetime import datetime
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -56,4 +57,14 @@ class Cart(db.Model):
     id = db.Column(db.Integer(), primary_key = True)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
     product_id = db.Column(db.Integer(), db.ForeignKey('product.id'))
+    quantity = db.Column(db.Integer(), nullable = False, default = 1)
     
+class Order(db.Model):
+    id = db.Column(db.Integer(), primary_key = True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    status = db.Column(db.String(length = 30), nullable = False, default = 'Pending')
+    created_at = db.Column(db.DateTime(), nullable = False, default = datetime.utcnow)
+    total_price = db.Column(db.Integer(), nullable = False, default = 0)
+    order_payment_content = db.Column(db.String(length = 1000), nullable = True)
+    #order = db.relationship('Order', backref='owned_user', lazy=True)
+    #order = db.relationship('Order', backref='owned_product', lazy=True)
