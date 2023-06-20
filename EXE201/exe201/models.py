@@ -63,7 +63,7 @@ class Order(db.Model):
     id = db.Column(db.Integer(), primary_key = True)
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
     status = db.Column(db.String(length = 30), nullable = False, default = 'Pending')
-    created_at = db.Column(db.DateTime(), nullable = False, default = datetime.utcnow)
+    created_at = db.Column(db.Date(), nullable = False, default = datetime.utcnow)
     total_price = db.Column(db.Integer(), nullable = False, default = 0)
     order_payment_content = db.Column(db.String(length = 1000), nullable = True)
     #order = db.relationship('Order', backref='owned_user', lazy=True)
